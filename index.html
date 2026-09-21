@@ -17,6 +17,7 @@
       --danger: #f87171;
       --warning: #fbbf24;
       --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.5);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -27,111 +28,161 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      -webkit-font-smoothing: antialiased;
     }
     header {
       width: 100%;
       max-width: 640px;
-      padding: 24px 16px;
+      padding: 18px 16px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid var(--border);
     }
+    header .brand { display: flex; align-items: center; gap: 10px; }
     header h1 {
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 700;
       color: var(--accent);
+      letter-spacing: -0.01em;
     }
-    header .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      transition: all 0.3s;
+    }
+    .status-badge.live { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-dim); }
+    .status-badge.offline { color: var(--danger); border-color: #3a0a0a; background: #1c0a0a; }
+    .status-badge .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor;
       animation: pulse 2s infinite;
     }
+    .status-badge.offline .dot { animation: none; }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+      50% { opacity: 0.35; }
     }
     main {
       flex: 1;
       width: 100%;
       max-width: 640px;
-      padding: 24px 16px;
+      padding: 18px 16px 24px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 14px;
     }
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow);
     }
     .card h2 {
-      font-size: 13px;
+      font-size: 12px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: var(--text-dim);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card h2 .badge {
+      font-size: 10px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      padding: 2px 7px;
+      border-radius: 10px;
+      text-transform: none;
+      letter-spacing: 0;
     }
     .stat-row {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
+      align-items: baseline;
+      padding: 7px 0;
       border-bottom: 1px solid var(--surface2);
+      gap: 8px;
     }
-    .stat-row:last-child { border: none; }
-    .stat-label { color: var(--text-dim); font-size: 13px; }
-    .stat-value { color: var(--text); font-weight: 600; font-size: 13px; }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-label { color: var(--text-dim); font-size: 13px; flex-shrink: 0; }
+    .stat-value { color: var(--text); font-weight: 600; font-size: 13px; text-align: right; word-break: break-all; }
     .stat-value.accent { color: var(--accent); }
+    .stat-value.low { color: var(--warning); }
+    .stat-value.danger { color: var(--danger); }
+    .stat-value.muted { color: var(--text-dim); font-weight: 400; }
+
     .input-group {
       display: flex;
       gap: 8px;
     }
+    .input-group.colon { flex-wrap: wrap; }
     input[type="text"] {
       flex: 1;
+      min-width: 0;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 12px 16px;
+      padding: 12px 14px;
       color: var(--text);
       font-family: inherit;
       font-size: 14px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input[type="text"]:focus { border-color: var(--accent); }
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.12);
+    }
     input[type="text"]::placeholder { color: var(--text-dim); }
+    input[type="text"]:disabled { opacity: 0.5; }
     button {
       background: var(--accent);
       color: var(--bg);
       border: none;
       border-radius: 8px;
-      padding: 12px 24px;
+      padding: 12px 20px;
       font-family: inherit;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 14px;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
+      transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    button:hover { opacity: 0.9; }
-    button:active { transform: scale(0.98); }
-    button:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
+    button:hover:not(:disabled) { opacity: 0.9; box-shadow: 0 0 12px rgba(74,222,128,0.25); }
+    button:active:not(:disabled) { transform: scale(0.97); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
     button.secondary {
       background: var(--surface2);
       color: var(--text);
       border: 1px solid var(--border);
     }
+    button.secondary:hover:not(:disabled) { background: #222; border-color: #3a3a3a; }
+    button.small { padding: 8px 14px; font-size: 12px; }
+    button.icon { padding: 8px 10px; font-size: 14px; }
+
     .result {
       margin-top: 12px;
-      padding: 12px;
+      padding: 11px 13px;
       border-radius: 8px;
       font-size: 13px;
+      line-height: 1.55;
       display: none;
+      word-break: break-word;
     }
     .result.success {
       display: block;
@@ -145,6 +196,7 @@
       border: 1px solid var(--danger);
       color: var(--danger);
     }
+
     .progress {
       height: 4px;
       background: var(--surface2);
@@ -158,33 +210,133 @@
       height: 100%;
       background: var(--accent);
       width: 0%;
-      transition: width 0.3s;
+      transition: width 0.15s linear;
     }
+
     footer {
       width: 100%;
       max-width: 640px;
-      padding: 16px;
+      padding: 14px 16px;
       border-top: 1px solid var(--border);
       text-align: center;
       color: var(--text-dim);
-      font-size: 12px;
+      font-size: 11px;
+      line-height: 1.6;
     }
     footer a { color: var(--accent); text-decoration: none; }
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 4px;
+    footer a:hover { text-decoration: underline; }
+
+    .donate-bar-wrap {
+      margin-top: 14px;
+      display: none;
+    }
+    .donate-bar-wrap.visible { display: block; }
+    .donate-bar-label {
+      display: flex;
+      justify-content: space-between;
       font-size: 11px;
-      font-weight: 600;
-      background: var(--accent-dim);
+      color: var(--text-dim);
+      margin-bottom: 5px;
+    }
+    .donate-bar {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .donate-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+      width: 0%;
+      transition: width 0.6s ease;
+    }
+
+    .claim-history { max-height: 200px; overflow-y: auto; }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--surface2);
+      font-size: 12px;
+      gap: 8px;
+    }
+    .history-item:last-child { border-bottom: none; }
+    .history-item .txid {
+      color: var(--text-dim);
+      font-size: 11px;
+      word-break: break-all;
+    }
+    .history-item .amount { color: var(--accent); font-weight: 600; flex-shrink: 0; }
+    .history-item .time { color: var(--text-dim); flex-shrink: 0; }
+    .history-empty {
+      color: var(--text-dim);
+      font-size: 12px;
+      text-align: center;
+      padding: 16px 0;
+      font-style: italic;
+    }
+    .history-reset {
+      margin-top: 8px;
+      text-align: right;
+    }
+
+    .trust-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .trust-chip {
+      flex: 1;
+      min-width: 100px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .trust-chip .num {
+      display: block;
+      font-size: 18px;
+      font-weight: 700;
       color: var(--accent);
+      margin-top: 4px;
+    }
+    .trust-chip .lbl {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .info-note {
+      color: var(--text-dim);
+      font-size: 12px;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 480px) {
+      header h1 { font-size: 14px; }
+      main { padding: 14px 12px 20px; gap: 12px; }
+      .card { padding: 14px; }
+      .input-group { flex-direction: column; }
+      button { width: 100%; justify-content: center; }
+      .trust-row { flex-direction: column; }
+      .trust-chip { min-width: unset; }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Community BCH Faucet</h1>
-    <div class="dot"></div>
+    <div class="brand">
+      <h1>Community BCH Faucet</h1>
+    </div>
+    <div class="status-badge offline" id="statusBadge">
+      <span class="dot"></span>
+      <span id="statusText">Checking</span>
+    </div>
   </header>
 
   <main>
@@ -192,15 +344,15 @@
       <h2>Faucet Status</h2>
       <div class="stat-row">
         <span class="stat-label">Wallet Address</span>
-        <span class="stat-value" id="walletAddr">Loading...</span>
+        <span class="stat-value" id="walletAddr">—</span>
       </div>
       <div class="stat-row">
-        <span class="stat-label">Balance</span>
+        <span class="stat-label">Hot Wallet Balance</span>
         <span class="stat-value accent" id="balance">0 BCH</span>
       </div>
       <div class="stat-row">
-        <span class="stat-label">Total Claimed</span>
-        <span class="stat-value" id="totalClaimed">0 BCH</span>
+        <span class="stat-label">Total Distributed</span>
+        <span class="stat-value muted" id="totalClaimed">0 BCH</span>
       </div>
       <div class="stat-row">
         <span class="stat-label">Total Claims</span>
@@ -211,120 +363,253 @@
         <span class="stat-value" id="totalSwept">0 BCH</span>
       </div>
       <div class="stat-row">
-        <span class="stat-label">Claim Interval</span>
-        <span class="stat-value" id="claimInterval">30 min</span>
+        <span class="stat-label">Community Fund</span>
+        <span class="stat-value muted" id="communityFund">0 BCH</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Uptime</span>
+        <span class="stat-value muted" id="uptime">—</span>
       </div>
       <div class="stat-row">
         <span class="stat-label">Claim Amount</span>
-        <span class="stat-value" id="claimAmount">0.00001 BCH</span>
+        <span class="stat-value accent" id="claimAmount">0 BCH</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Claim Interval</span>
+        <span class="stat-value" id="claimInterval">—</span>
       </div>
       <div class="stat-row">
         <span class="stat-label">Sweep Threshold</span>
-        <span class="stat-value" id="sweepThreshold">0.001 BCH</span>
+        <span class="stat-value muted" id="sweepThreshold">0 BCH</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Donation Target</span>
+        <span class="stat-value muted" id="donateTarget">0 BCH</span>
+      </div>
+      <div class="trust-row">
+        <div class="trust-chip">
+          <span class="num" id="trustClaims">0</span>
+          <span class="lbl">Total Claims</span>
+        </div>
+        <div class="trust-chip">
+          <span class="num" id="trustDistributed">0</span>
+          <span class="lbl">Distributed (BCH)</span>
+        </div>
+        <div class="trust-chip">
+          <span class="num" id="trustUptime">—</span>
+          <span class="lbl">Uptime</span>
+        </div>
       </div>
     </div>
 
     <div class="card">
-      <h2>Claim BCH</h2>
+      <h2>
+        Claim BCH
+        <span class="badge" id="remainingBadge">—</span>
+      </h2>
       <div class="input-group">
-        <input type="text" id="claimAddress" placeholder="Enter your BCH address (e.g., 17H9cQnJcQmdeyJ162WvskQJwkwWEVcEUg)">
-        <button id="claimBtn" onclick="claim()">Claim</button>
+        <input type="text" id="claimAddress" placeholder="Enter your BCH address (e.g. 17H9cQnJc…cEUg)" autocomplete="off" spellcheck="false">
+        <button id="claimBtn" onclick="claim()">Claim BCH</button>
       </div>
       <div class="result" id="claimResult"></div>
-      <div class="progress" id="claimProgress"><div class="progress-bar"></div></div>
+      <div class="progress" id="claimProgress">
+        <div class="progress-bar"></div>
+      </div>
+      <p class="info-note">
+        Each address can claim once per <span id="intervalLabel">30</span> minutes.
+        Claims are sent on-chain — your tx will appear in explorers shortly.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>
+        Claim History
+        <span class="badge" id="historyCount">0</span>
+      </h2>
+      <div class="claim-history" id="claimHistory">
+        <div class="history-empty">No claims yet — be the first!</div>
+      </div>
+      <div class="history-reset">
+        <button class="secondary small" onclick="clearHistory()">Clear history</button>
+      </div>
     </div>
 
     <div class="card">
       <h2>Community Fund</h2>
-      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 12px;">
-        Donate BCH to keep the faucet running. All profits (minus claims) are swept to Coinbase.
+      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 10px; line-height: 1.5;">
+        Donate BCH to keep this faucet running for everyone. All donations go directly to the hot wallet.
       </p>
-      <div class="input-group">
-        <input type="text" id="donateAddress" placeholder="Your BCH address to donate from">
+      <div class="input-group colon">
+        <input type="text" id="donateAddress" placeholder="Your BCH address (to send from)" autocomplete="off" spellcheck="false">
         <button class="secondary" onclick="showDonateInfo()">How to Donate</button>
       </div>
+      <div class="donate-bar-wrap" id="donateBarWrap">
+        <div class="donate-bar-label">
+          <span>Community fund balance</span>
+          <span id="donateBarPct">0% of target</span>
+        </div>
+        <div class="donate-bar">
+          <div class="donate-bar-fill" id="donateBarFill"></div>
+        </div>
+      </div>
       <div class="result" id="donateResult"></div>
+      <p class="info-note">
+        Target: <span id="donateTargetLabel">0 BCH</span> — enough to cover ~5× the sweep threshold.
+        When the balance exceeds the sweep threshold, profits are sent to Coinbase.
+      </p>
     </div>
   </main>
 
   <footer>
-    <p>Community-funded BCH faucet. All profits swept to <a href="https://www.coinbase.com" target="_blank">Coinbase</a>.</p>
+    <p>Community-funded BCH faucet — all profits swept to <a href="https://www.coinbase.com" target="_blank" rel="noopener">Coinbase</a>.</p>
+    <p style="margin-top:4px; opacity:0.6;">Always verify the txid on a BCH block explorer before considering a claim final.</p>
   </footer>
 
   <script>
-    const API = '';
+    const API = window.location.origin + '/api';
+    const RELATIVE_API = '/api';
+
+    function apiUrl(path) {
+      if (window.location.protocol === 'file:') return RELATIVE_API + path;
+      return API + path;
+    }
+
+    function $(id) { return document.getElementById(id); }
+
+    function showResult(elId, msg, type) {
+      const el = $(elId);
+      el.textContent = msg;
+      el.className = 'result ' + (type || '');
+      el.style.display = 'block';
+    }
+
+    function truncateAddress(addr) {
+      if (!addr || addr.length < 20) return addr || '—';
+      return addr.slice(0, 10) + '…' + addr.slice(-8);
+    }
+
+    function formatBch(n) {
+      const v = Number(n) || 0;
+      if (v < 0.000001) return v.toFixed(8) + ' BCH';
+      if (v < 0.01) return v.toFixed(6) + ' BCH';
+      return v.toFixed(4) + ' BCH';
+    }
 
     async function loadStatus() {
       try {
-        const res = await fetch('/api/status');
+        const res = await fetch(apiUrl('/status'));
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
-        document.getElementById('walletAddr').textContent = data.walletAddress.slice(0, 12) + '...' + data.walletAddress.slice(-8);
-        document.getElementById('balance').textContent = data.balance.toFixed(8) + ' BCH';
-        document.getElementById('totalClaimed').textContent = data.totalClaimed.toFixed(8) + ' BCH';
-        document.getElementById('totalClaims').textContent = data.totalClaims;
-        document.getElementById('totalSwept').textContent = data.totalSwept.toFixed(8) + ' BCH';
-        document.getElementById('claimInterval').textContent = (data.houseEdge * 100).toFixed(1) + '% house edge';
-        document.getElementById('claimAmount').textContent = data.minClaim.toFixed(8) + ' BCH';
-        document.getElementById('sweepThreshold').textContent = data.sweepThreshold.toFixed(8) + ' BCH';
+        $('walletAddr').textContent = truncateAddress(data.walletAddress);
+        $('balance').textContent = formatBch(data.balance);
+        $('balance').className = 'stat-value' + (Number(data.balance) < 0.0001 ? ' low' : ' accent');
+        $('totalClaimed').textContent = formatBch(data.totalClaimed);
+        $('totalClaims').textContent = Number(data.totalClaims).toLocaleString();
+        $('totalSwept').textContent = formatBch(data.totalSwept);
+        $('communityFund').textContent = formatBch(data.communityFund || data.balance);
+        $('uptime').textContent = data.uptime || '—';
+        $('claimInterval').textContent = (data.houseEdge * 100).toFixed(1) + '% edge';
+        $('claimAmount').textContent = formatBch(data.minClaim);
+        $('sweepThreshold').textContent = formatBch(data.sweepThreshold);
+        $('donateTarget').textContent = formatBch((data.sweepThreshold || 0.001) * 5);
       } catch (err) {
-        console.error('Failed to load status:', err);
+        console.error('Status load failed:', err);
+        const dot = document.querySelector('.status-dot');
+        if (dot) dot.textContent = ' OFFLINE';
       }
     }
 
     async function claim() {
-      const address = document.getElementById('claimAddress').value.trim();
-      if (!address) return showResult('claimResult', 'Please enter a BCH address', false);
+      const address = $('claimAddress').value.trim();
+      if (!address) {
+        showResult('claimResult', 'Please enter a BCH address.', 'error');
+        $('claimAddress').focus();
+        return;
+      }
+      if (address.length < 25 || address.length > 50) {
+        showResult('claimResult', 'That BCH address looks too short or too long.', 'error');
+        return;
+      }
 
-      const btn = document.getElementById('claimBtn');
+      const btn = $('claimBtn');
+      const progress = $('claimProgress');
+      const bar = progress.querySelector('.progress-bar');
       btn.disabled = true;
-      btn.textContent = 'Processing...';
-      document.querySelector('#claimProgress').classList.add('active');
-      document.querySelector('#claimProgress .progress-bar').style.width = '50%';
+      btn.textContent = 'Claiming…';
+      progress.classList.add('active');
+      bar.style.width = '0%';
+      $('claimAddress').disabled = true;
+
+      let tick = 0;
+      const tickTimer = setInterval(() => {
+        bar.style.width = Math.min(90, tick * 10) + '%';
+        tick++;
+      }, 150);
 
       try {
-        const res = await fetch('/api/claim', {
+        const res = await fetch(apiUrl('/claim'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ address }),
         });
         const data = await res.json();
-        document.querySelector('#claimProgress .progress-bar').style.width = '100%';
+        bar.style.width = '100%';
 
         if (data.success) {
-          showResult('claimResult', `Claimed ${data.amount} BCH! TX: ${data.txid}`, true);
-          document.getElementById('claimAddress').value = '';
-          loadStatus();
+          showResult('claimResult',
+            '✓ Claimed ' + formatBch(data.amount) + ' — TX: ' + (data.txid || '—'),
+            'success');
+          $('claimAddress').value = '';
+          setTimeout(loadStatus, 800);
         } else {
-          showResult('claimResult', data.error || 'Claim failed', false);
+          const msg = (data.error || data.message || 'Claim denied').trim();
+          let resultMsg = '✗ ' + msg;
+          if (data.nextClaimAt) {
+            try {
+              const then = new Date(data.nextClaimAt);
+              resultMsg += '\nNext claim available: ' + then.toLocaleTimeString();
+            } catch (_) {}
+          }
+          showResult('claimResult', resultMsg, 'error');
         }
       } catch (err) {
-        showResult('claimResult', 'Network error. Please try again.', false);
+        showResult('claimResult', 'Network error — faucet unreachable. Retry in a moment.', 'error');
       } finally {
+        clearInterval(tickTimer);
         btn.disabled = false;
-        btn.textContent = 'Claim';
+        btn.textContent = 'Claim BCH';
+        $('claimAddress').disabled = false;
         setTimeout(() => {
-          document.querySelector('#claimProgress').classList.remove('active');
-          document.querySelector('#claimProgress .progress-bar').style.width = '0%';
-        }, 1000);
+          progress.classList.remove('active');
+          bar.style.width = '0%';
+        }, 800);
       }
     }
 
-    function showDonateInfo() {
-      fetch('/api/donate').then(r => r.json()).then(data => {
+    async function showDonateInfo() {
+      $('donateResult').style.display = 'none';
+      try {
+        const res = await fetch(apiUrl('/donate'));
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
         showResult('donateResult',
-          `Send BCH to: ${data.address}\nMinimum: ${data.minimum} BCH\n\nThis funds the faucet for all users.`, true);
-      });
+          'Send BCH to:\n' + data.address + '\nMinimum: ' + formatBch(data.minimum) + '\n\n' +
+          'Donations keep the faucet solvent for everyone.',
+          'success');
+      } catch (err) {
+        showResult('donateResult', 'Could not load donation info.', 'error');
+      }
     }
 
-    function showResult(elId, msg, success) {
-      const el = document.getElementById(elId);
-      el.textContent = msg;
-      el.className = 'result ' + (success ? 'success' : 'error');
-    }
+    $('claimAddress').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); claim(); }
+    });
 
-    // Load status on mount and refresh every 30s
     loadStatus();
     setInterval(loadStatus, 30000);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) loadStatus();
+    });
   </script>
 </body>
 </html>
