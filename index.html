@@ -495,11 +495,58 @@
       return v.toFixed(4) + ' BCH';
     }
 
+    /* ---------- claim history ---------- */
+
+    const claimHistory = [];
+
+    function addHistoryEntry(address, amount, txid) {
+      claimHistory.unshift({ address, amount, txid, time: new Date() });
+      if (claimHistory.length > 50) claimHistory.pop();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const container = $('claimHistory');
+      const countBadge = $('historyCount');
+      if (!container) return;
+      if (claimHistory.length === 0) {
+        container.innerHTML = '<div class="history-empty">No claims yet — be the first!</div>';
+        if (countBadge) countBadge.textContent = '0';
+        return;
+      }
+      container.innerHTML = claimHistory.map(h => {
+        const timeStr = h.time.toLocaleTimeString();
+        const shortAddr = truncateAddress(h.address);
+        const txShort = h.txid ? h.txid.slice(0, 20) + '…' : '—';
+        return `<div class="history-item">
+          <span class="shortAddr" title="${h.address}">${shortAddr}</span>
+          <span class="amount">${formatBch(h.amount)}</span>
+          <span class="txid" title="${h.txid || ''}">${txShort}</span>
+          <span class="time">${timeStr}</span>
+        </div>`;
+      }).join('');
+      if (countBadge) countBadge.textContent = claimHistory.length;
+    }
+
+    function clearHistory() {
+      claimHistory.length = 0;
+      renderHistory();
+    }
+
+    /* ---------- status polling ---------- */
+
+    let statusInterval = null;
+
     async function loadStatus() {
+      const badge = $('statusBadge');
+      const statusText = $('statusText');
+      if (badge) { badge.className = 'status-badge'; statusText.textContent = 'Checking'; }
+
       try {
         const res = await fetch(apiUrl('/status'));
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
+
         $('walletAddr').textContent = truncateAddress(data.walletAddress);
         $('balance').textContent = formatBch(data.balance);
         $('balance').className = 'stat-value' + (Number(data.balance) < 0.0001 ? ' low' : ' accent');
@@ -511,11 +558,42 @@
         $('claimInterval').textContent = (data.houseEdge * 100).toFixed(1) + '% edge';
         $('claimAmount').textContent = formatBch(data.minClaim);
         $('sweepThreshold').textContent = formatBch(data.sweepThreshold);
-        $('donateTarget').textContent = formatBch((data.sweepThreshold || 0.001) * 5);
+        const target = formatBch((data.sweepThreshold || 0.001) * 5);
+        $('donateTarget').textContent = target;
+        $('donateTargetLabel').textContent = target;
+
+        // Trust chips
+        $('trustClaims').textContent = Number(data.totalClaims).toLocaleString();
+        $('trustDistributed').textContent = formatBch(data.totalClaimed).replace(' BCH', '');
+        $('trustUptime').textContent = data.uptime || '—';
+
+        // Status badge
+        if (badge) {
+          badge.className = 'status-badge live';
+          statusText.textContent = ' LIVE';
+        }
+
+        // Remaining-time badge (estimate from houseEdge — not exact per-address)
+        const mins = Math.round(1 / (data.houseEdge || 0.05) * 0.05);
+        $('remainingBadge').textContent = '~' + mins + ' min';
+        $('intervalLabel').textContent = mins;
+
+        // Donation progress bar
+        const fund = Number(data.communityFund || data.balance);
+        const sweepThr = Number(data.sweepThreshold || 0.001);
+        const pctOfTarget = sweepThr > 0 ? Math.min(100, (fund / (sweepThr * 5)) * 100) : 0;
+        const barWrap = $('donateBarWrap');
+        const barFill = $('donateBarFill');
+        const barPct = $('donateBarPct');
+        if (barWrap) barWrap.classList.toggle('visible', fund > 0);
+        if (barFill) barFill.style.width = pctOfTarget + '%';
+        if (barPct) barPct.textContent = pctOfTarget.toFixed(0) + '% of target';
       } catch (err) {
         console.error('Status load failed:', err);
-        const dot = document.querySelector('.status-dot');
-        if (dot) dot.textContent = ' OFFLINE';
+        if (badge) {
+          badge.className = 'status-badge offline';
+          statusText.textContent = ' OFFLINE';
+        }
       }
     }
 
@@ -560,6 +638,7 @@
             '✓ Claimed ' + formatBch(data.amount) + ' — TX: ' + (data.txid || '—'),
             'success');
           $('claimAddress').value = '';
+          if (data.txid) addHistoryEntry(address, data.amount, data.txid);
           setTimeout(loadStatus, 800);
         } else {
           const msg = (data.error || data.message || 'Claim denied').trim();
